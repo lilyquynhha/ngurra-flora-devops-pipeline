@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import prisma from "../lib/prisma";
-import { ConservationStatus } from "@prisma/client";
+import { ConservationStatus } from "../prisma/generated/prisma/enums";
 
 // --- Get all plants with filtering options and pagination
 

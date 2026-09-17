@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { Role } from "@prisma/client";
+import { Role } from "../prisma/generated/prisma/enums";
 
 // Check if the user has the required role(s)
 export const requireRole = (...roles: Role[]) => {
