@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "tsx watch src/server.js",
     "build": "tsc",
     "start": "node dist/server.js",
     "test": "vitest run",
@@ -19,7 +19,7 @@
   "keywords": [],
   "author": "lily ha",
   "license": "ISC",
-  "type": "module",
+  "type": "commonjs",
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
@@ -56,6 +56,7 @@
   },
   "overrides": {
     "deepmerge-ts": "^8.0.0",
-    "mysql2": "^3.24.0"
+    "mysql2": "^3.24.0",
+    "glob": "^13.0.6"
   }
 }
