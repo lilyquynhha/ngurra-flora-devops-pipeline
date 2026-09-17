@@ -37,7 +37,7 @@ Notable endpoints include spatial queries powered by PostGIS:
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 22+
 - PostgreSQL 16 with the PostGIS extension installed
 - Git
 
