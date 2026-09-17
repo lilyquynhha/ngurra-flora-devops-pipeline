@@ -3,7 +3,7 @@ import { Router } from "express";
 import prisma from "../lib/prisma";
 const router = Router();
 
-router.get("/", async (_req: Request, res: Response) => {
+router.get("/health", async (_req: Request, res: Response) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
     res.status(200).json({ status: "ok", db: "connected" });

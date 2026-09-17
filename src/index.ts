@@ -58,7 +58,7 @@ app.get("/api-docs.json", (_req, res) => {
 });
 
 app.use("/auth", authLimiter, authRoutes);
-app.use("/health", healthRoutes);
+app.use(healthRoutes);
 app.use(generalLimiter);
 app.use("/plants", plantRoutes);
 app.use("/regions", regionRoutes);
