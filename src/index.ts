@@ -12,6 +12,8 @@ import occurrenceRoutes from "./routes/occurence.routes";
 import tagRoutes from "./routes/tag.routes";
 import { errorHandler } from "./middleware/error.middleware";
 import rateLimit from "express-rate-limit";
+import { metricsMiddleware } from "./middleware/metrics.middleware";
+import metricsRoutes from "./routes/metrics.routes";
 
 dotenv.config();
 
@@ -57,8 +59,11 @@ app.get("/api-docs.json", (_req, res) => {
   res.json(swaggerSpec);
 });
 
-app.use("/auth", authLimiter, authRoutes);
+app.use(metricsMiddleware); // track all requests
 app.use(healthRoutes);
+app.use(metricsRoutes);
+
+app.use("/auth", authLimiter, authRoutes);
 app.use(generalLimiter);
 app.use("/plants", plantRoutes);
 app.use("/regions", regionRoutes);
