@@ -5,6 +5,7 @@ import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./lib/swagger";
 
 import authRoutes from "./routes/auth.routes";
+import healthRoutes from "./routes/health.routes";
 import plantRoutes from "./routes/plant.routes";
 import regionRoutes from "./routes/region.routes";
 import occurrenceRoutes from "./routes/occurence.routes";
@@ -57,6 +58,7 @@ app.get("/api-docs.json", (_req, res) => {
 });
 
 app.use("/auth", authLimiter, authRoutes);
+app.use("/health", healthRoutes);
 app.use(generalLimiter);
 app.use("/plants", plantRoutes);
 app.use("/regions", regionRoutes);
