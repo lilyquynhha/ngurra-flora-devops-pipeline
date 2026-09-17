@@ -8,11 +8,11 @@ import {
   linkPlantToRegion,
   unlinkPlantFromRegion,
   getNearbyPlants,
-} from "../controllers/plant.controller";
-import { linkPlantToTag, unlinkPlantFromTag } from "../controllers/plant.controller";
-import { authenticate } from "../middleware/authenticate";
-import { requireRole } from "../middleware/requireRole";
-import { CreatePlantSchema, UpdatePlantSchema, validate } from "../lib/schemaValidation";
+} from "../controllers/plant.controller.js";
+import { linkPlantToTag, unlinkPlantFromTag } from "../controllers/plant.controller.js";
+import { authenticate } from "../middleware/authenticate.js";
+import { requireRole } from "../middleware/requireRole.js";
+import { CreatePlantSchema, UpdatePlantSchema, validate } from "../lib/schemaValidation.js";
 
 const router = Router();
 

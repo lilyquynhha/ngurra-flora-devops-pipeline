@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, beforeEach } from "vitest";
 import supertest from "supertest";
-import app from "../index";
-import prisma from "../lib/prisma";
+import app from "../index.js";
+import prisma from "../lib/prisma.js";
 
 const request = supertest(app);
 

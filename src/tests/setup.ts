@@ -1,4 +1,4 @@
-import prisma from "../lib/prisma";
+import prisma from "../lib/prisma.js";
 import { beforeAll, afterAll } from "vitest";
 
 // Wipe database before each test suite

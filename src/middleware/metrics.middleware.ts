@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { httpRequestDuration } from "../lib/metrics";
+import { httpRequestDuration } from "../lib/metrics.js";
 
 // record how long the request took
 export function metricsMiddleware(req: Request, res: Response, next: NextFunction) {

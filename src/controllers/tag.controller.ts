@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import prisma from "../lib/prisma";
+import prisma from "../lib/prisma.js";
 
 // --- Get all tags
 
@@ -60,7 +60,7 @@ export const getTagById = async (
     res.json({
       data: {
         ...tagData,
-        plants: plantTags.map((pt) => pt.plant),
+        plants: plantTags.map((pt: any) => pt.plant),
       },
     });
   } catch (err) {

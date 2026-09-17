@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { Role } from "../prisma/generated/prisma/enums";
+import { Role } from "../prisma/generated/prisma/enums.js";
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 

@@ -1,5 +1,6 @@
 import axios from "axios";
-import prisma from "../lib/prisma";
+import prisma from "../lib/prisma.js";
+import { Region } from "./generated/prisma/client.js";
 
 // --- API URL
 
@@ -197,7 +198,7 @@ const seedOccurrencesAndRegions = async (plants: AlaSpecies[]) => {
 
   // Region Hashap
   // Key: region's name. Value: the full region record
-  const regionByName = new Map(allRegions.map((r) => [r.name.toLowerCase(), r]));
+  const regionByName = new Map(allRegions.map((r: Region) => [r.name.toLowerCase(), r]));
 
   let totalOccurrences = 0;
   let totalRegionLinks = 0;
@@ -219,7 +220,7 @@ const seedOccurrencesAndRegions = async (plants: AlaSpecies[]) => {
     // For each occurence: Update the location column & Link plant to region
     for (const occ of occurrences) {
       const regionKey = occ.stateProvince?.toLowerCase();
-      const region = regionKey ? regionByName.get(regionKey) : null;
+      const region : Region | null | undefined = regionKey ? regionByName.get(regionKey) : null;
       const regionId = region?.id ?? null;
 
       // Seed the occurence

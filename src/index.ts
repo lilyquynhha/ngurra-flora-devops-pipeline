@@ -2,18 +2,18 @@ import express from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
-import { swaggerSpec } from "./lib/swagger";
+import { swaggerSpec } from "./lib/swagger.js";
 
-import authRoutes from "./routes/auth.routes";
-import healthRoutes from "./routes/health.routes";
-import plantRoutes from "./routes/plant.routes";
-import regionRoutes from "./routes/region.routes";
-import occurrenceRoutes from "./routes/occurence.routes";
-import tagRoutes from "./routes/tag.routes";
-import { errorHandler } from "./middleware/error.middleware";
+import authRoutes from "./routes/auth.routes.js";
+import healthRoutes from "./routes/health.routes.js";
+import plantRoutes from "./routes/plant.routes.js";
+import regionRoutes from "./routes/region.routes.js";
+import occurrenceRoutes from "./routes/occurence.routes.js";
+import tagRoutes from "./routes/tag.routes.js";
+import { errorHandler } from "./middleware/error.middleware.js";
 import rateLimit from "express-rate-limit";
-import { metricsMiddleware } from "./middleware/metrics.middleware";
-import metricsRoutes from "./routes/metrics.routes";
+import { metricsMiddleware } from "./middleware/metrics.middleware.js";
+import metricsRoutes from "./routes/metrics.routes.js";
 
 dotenv.config();
 
@@ -71,5 +71,9 @@ app.use("/occurrences", occurrenceRoutes);
 app.use("/tags", tagRoutes);
 
 app.use(errorHandler);
+
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
 
 export default app;

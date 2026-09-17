@@ -5,11 +5,11 @@ import {
   createRegion,
   updateRegion,
   deleteRegion,
-} from "../controllers/region.controller";
-import { authenticate } from "../middleware/authenticate";
-import { requireRole } from "../middleware/requireRole";
-import { linkPlantToRegion, unlinkPlantFromRegion } from "../controllers/plant.controller";
-import { CreateRegionSchema, UpdateRegionSchema, validate } from "../lib/schemaValidation";
+} from "../controllers/region.controller.js";
+import { authenticate } from "../middleware/authenticate.js";
+import { requireRole } from "../middleware/requireRole.js";
+import { linkPlantToRegion, unlinkPlantFromRegion } from "../controllers/plant.controller.js";
+import { CreateRegionSchema, UpdateRegionSchema, validate } from "../lib/schemaValidation.js";
 
 const router = Router();
 

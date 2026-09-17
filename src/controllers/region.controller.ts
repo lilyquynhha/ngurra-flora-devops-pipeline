@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import prisma from "../lib/prisma";
-
+import prisma from "../lib/prisma.js";
 // --- Get all regions
 
 export const getAllRegions = async (
@@ -61,7 +60,7 @@ export const getRegionById = async (
       data: {
         ...regionData,
         plantsCount: plantRegions.length,
-        plants: plantRegions.map((pr) => pr.plant),
+        plants: plantRegions.map((pr: any) => pr.plant),
       },
     });
   } catch (err) {

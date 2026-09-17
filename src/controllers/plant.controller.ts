@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import prisma from "../lib/prisma";
-import { ConservationStatus } from "../prisma/generated/prisma/enums";
+import prisma from "../lib/prisma.js";
+import { ConservationStatus } from "../prisma/generated/prisma/enums.js";
+import { TransactionClient } from "../prisma/generated/prisma/internal/prismaNamespace.js";
 
 // --- Get all plants with filtering options and pagination
 
@@ -13,11 +14,11 @@ export const getAllPlants = async (
     // Get the query params for pagination
     let page = parseInt(req.query.page as string) || 1;
     let limit = parseInt(req.query.limit as string) || 20;
-    
+
     // Validate positive integers
     if (page < 1 || !Number.isInteger(page)) page = 1;
     if (limit < 1 || !Number.isInteger(limit)) limit = 20;
-    
+
     const skip = (page - 1) * limit;
 
     // Get the query params for filtering options
@@ -282,7 +283,7 @@ export const updatePlant = async (
       tagIds,
     } = req.body;
 
-    const plant = await prisma.$transaction(async (tx) => {
+    const plant = await prisma.$transaction(async (tx: TransactionClient) => {
       await tx.plant.update({
         where: { id: id as string },
         data: {

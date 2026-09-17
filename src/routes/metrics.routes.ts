@@ -1,6 +1,6 @@
 // src/routes/metrics.routes.ts
 import { Router } from "express";
-import { register } from "../lib/metrics";
+import { register } from "../lib/metrics.js";
 
 const router = Router();
 

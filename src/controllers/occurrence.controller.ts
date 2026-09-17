@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import prisma from "../lib/prisma";
+import prisma from "../lib/prisma.js";
 
 // --- Helper: match regionId from regionCode
 const resolveRegionId = async (regionCode: string | undefined): Promise<string | null> => {

@@ -8,11 +8,11 @@
  *
  * 🟢 You can import this file directly.
  */
-export type * from './models/User'
-export type * from './models/Plant'
-export type * from './models/Region'
-export type * from './models/PlantRegion'
-export type * from './models/Occurrence'
-export type * from './models/Tag'
-export type * from './models/PlantTag'
-export type * from './commonInputTypes'
+export type * from './models/User.js'
+export type * from './models/Plant.js'
+export type * from './models/Region.js'
+export type * from './models/PlantRegion.js'
+export type * from './models/Occurrence.js'
+export type * from './models/Tag.js'
+export type * from './models/PlantTag.js'
+export type * from './commonInputTypes.js'

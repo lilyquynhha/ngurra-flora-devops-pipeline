@@ -7,10 +7,14 @@ import {
   createOccurrence,
   updateOccurrence,
   deleteOccurrence,
-} from "../controllers/occurrence.controller";
-import { authenticate } from "../middleware/authenticate";
-import { requireRole } from "../middleware/requireRole";
-import { CreateOccurrenceSchema, UpdateOccurenceSchema, validate } from "../lib/schemaValidation";
+} from "../controllers/occurrence.controller.js";
+import { authenticate } from "../middleware/authenticate.js";
+import { requireRole } from "../middleware/requireRole.js";
+import {
+  CreateOccurrenceSchema,
+  UpdateOccurenceSchema,
+  validate,
+} from "../lib/schemaValidation.js";
 
 const router = Router();
 
