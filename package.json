@@ -1,8 +1,8 @@
 {
-  "name": "byob",
+  "name": "ngurra_flora_devops_pipeline",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
@@ -10,10 +10,14 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "format": "prettier --write \"src/**/*.{ts,json}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,json}\""
+    "format:check": "prettier --check \"src/**/*.{ts,json}\"",
+    "migrate:deploy:staging": "dotenv -e .env.staging -- npx prisma migrate deploy",
+    "migrate:deploy:prod": "dotenv -e .env.production -- npx prisma migrate deploy",
+    "seed:staging": "dotenv -e .env.staging -- npx prisma db seed",
+    "seed:prod": "dotenv -e .env.production -- npx prisma db seed"
   },
   "keywords": [],
-  "author": "",
+  "author": "lily ha",
   "license": "ISC",
   "type": "module",
   "dependencies": {
@@ -41,6 +45,7 @@
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
     "dotenv": "^17.4.2",
+    "dotenv-cli": "^11.0.0",
     "prettier": "^3.8.3",
     "prisma": "^7.8.0",
     "supertest": "^7.2.2",
