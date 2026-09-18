@@ -87,8 +87,8 @@ pipeline {
                     sh "docker pull ${IMAGE_NAME}:${IMAGE_TAG}"
 
                     // create the database first
-                    sh "docker compose -f docker-compose.staging.yml down" // force a recreation
-                    sh "docker compose -f docker-compose.staging.yml up -d --wait db"
+                    sh "docker compose -p ngurra-staging -f docker-compose.staging.yml down" // force a recreation
+                    sh "docker compose -p ngurra-staging -f docker-compose.staging.yml up -d --wait db"
 
                     // run migrations on the database using the builder image
                     // (in a temp container) which has the dev dependencies
@@ -128,8 +128,8 @@ pipeline {
                 withCredentials([file(credentialsId: 'env-production', variable: 'ENV_PROD_FILE')]) {
                     sh "cp \$ENV_PROD_FILE .env.production"
 
-                    sh "docker compose -f docker-compose.production.yml down"
-                    sh "docker compose -f docker-compose.production.yml up -d --wait db"
+                    sh "docker compose -p ngurra-production -f docker-compose.production.yml down"
+                    sh "docker compose -p ngurra-production -f docker-compose.production.yml up -d --wait db"
 
                     sh "docker build --target builder -t ngurra-migrator:${BUILD_NUMBER} ."
                     sh """
