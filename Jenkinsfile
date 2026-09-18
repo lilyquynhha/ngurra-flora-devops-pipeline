@@ -113,8 +113,6 @@ pipeline {
         }
         stage('Release') {
             steps {
-                input message: "Deploy build ${IMAGE_TAG} to production?", ok: "Release"
-
                 sh "docker network create prod-net || true"
 
                 script {
