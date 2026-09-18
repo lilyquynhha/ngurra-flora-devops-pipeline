@@ -59,6 +59,9 @@ pipeline {
             steps {
                 sh """
                     docker run --rm aquasec/trivy image \
+                    -u root \
+                    -v jenkins_home:/var/jenkins_home \
+                    -w \$WORKSPACE \
                     --exit-code 1 \
                     --severity CRITICAL,HIGH \
                     --format table \
