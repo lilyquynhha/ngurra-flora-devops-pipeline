@@ -21,6 +21,8 @@ services:
       POSTGRES_DB: ngurra_flora_staging
     volumes:
       - staging_db_data:/var/lib/postgresql/data
+    networks:
+      - staging-net
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s

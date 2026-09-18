@@ -87,7 +87,7 @@ pipeline {
                     sh "docker pull ${IMAGE_NAME}:${IMAGE_TAG}"
 
                     // create the database first
-                    sh "docker compose -f docker-compose.staging.yml down" // force a clean recreation
+                    sh "docker compose -f docker-compose.staging.yml down" // force a recreation
                     sh "docker compose -f docker-compose.staging.yml up -d --wait db"
 
                     // run migrations on the database using the builder image
