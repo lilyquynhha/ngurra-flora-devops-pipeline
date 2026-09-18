@@ -11,4 +11,4 @@ receivers:
         channel: "#ngurra-alerts"
         send_resolved: true
         title: "{{ .CommonAnnotations.summary }}"
-        text: "{{ .CommonAnnotations.description }}"
+        text: "{{ .CommonAnnotations.description }}" 

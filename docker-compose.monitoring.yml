@@ -1,11 +1,8 @@
 services:
   prometheus:
-    image: prom/prometheus:latest
+    image: ngurra-prometheus:latest
     ports:
       - "9090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./alert.rules.yml:/etc/prometheus/alert.rules.yml
     networks:
       - staging-net
       - prod-net
@@ -14,11 +11,9 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
 
   alertmanager:
-    image: prom/alertmanager:latest
+    image: ngurra-alertmanager:latest
     ports:
       - "9093:9093"
-    volumes:
-      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
     networks:
       - monitoring-net
 

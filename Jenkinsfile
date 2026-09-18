@@ -154,6 +154,9 @@ pipeline {
                     sh "envsubst < alertmanager.template.yml > alertmanager.yml"
                 }
 
+                sh "docker build -t ngurra-prometheus:latest -f Dockerfile.prometheus ."
+                sh "docker build -t ngurra-alertmanager:latest -f Dockerfile.alertmanager ."
+
                 sh "docker network create monitoring-net || true"
                 sh "docker compose -f docker-compose.monitoring.yml up -d"
 
