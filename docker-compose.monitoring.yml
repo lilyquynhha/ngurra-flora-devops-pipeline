@@ -23,6 +23,8 @@ services:
       - "3005:3000"
     networks:
       - monitoring-net
+    volumes:
+      - grafana_data:/var/lib/grafana
     depends_on:
       - prometheus
 
@@ -33,3 +35,6 @@ networks:
     external: true
   monitoring-net:
     external: true
+  
+volumes:
+  grafana_data:
