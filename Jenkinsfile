@@ -162,9 +162,22 @@ pipeline {
                 sh "docker compose -f docker-compose.monitoring.yml up -d"
 
                 sh """
-                    docker run --rm --network monitoring-net curlimages/curl -sf -G \
-                    'http://prometheus:9090/api/v1/query' \
-                    --data-urlencode 'query=up{job="ngurra-production"}'
+                    for i in \$(seq 1 12); do
+                        RESULT=\$(docker run --rm --network monitoring-net curlimages/curl -sf -G \
+                        'http://prometheus:9090/api/v1/query' \
+                        --data-urlencode 'query=up{job="ngurra-production"}')
+
+                        if echo "\$RESULT" | grep -qF '"1"]'; then
+                            echo "Production app confirmed up in Prometheus (attempt \$i)."
+                            exit 0
+                        fi
+
+                        echo "Attempt \$i/12: not yet reporting up, retrying in 10s..."
+                        sleep 10
+                    done
+
+                    echo "Production app did not report as up in Prometheus after 2 minutes."
+                    exit 1
                 """
             }
         }
