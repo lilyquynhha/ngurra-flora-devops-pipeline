@@ -150,6 +150,10 @@ pipeline {
         }
         stage('Monitoring') {
             steps {
+                withCredentials([string(credentialsId: 'slack-webhook-url', variable: 'SLACK_WEBHOOK_URL')]) {
+                    sh "envsubst < alertmanager.template.yml > alertmanager.yml"
+                }
+
                 sh "docker network create monitoring-net || true"
                 sh "docker compose -f docker-compose.monitoring.yml up -d"
 
