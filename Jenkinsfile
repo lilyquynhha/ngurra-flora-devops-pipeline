@@ -159,7 +159,7 @@ pipeline {
                 sh "docker build -t ngurra-alertmanager:latest -f Dockerfile.alertmanager ."
 
                 // sh "docker network create monitoring-net || true"
-                sh "docker compose -f docker-compose.monitoring.yml up -d"
+                sh "docker compose -p ngurra-monitoring -f docker-compose.monitoring.yml up -d"
 
                 sh """
                     for i in \$(seq 1 12); do
