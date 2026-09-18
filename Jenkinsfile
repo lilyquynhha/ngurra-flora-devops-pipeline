@@ -79,6 +79,8 @@ pipeline {
         }
         stage('Deploy') {
             steps {
+                sh "docker network create staging-net || true"
+
                 withCredentials([file(credentialsId: 'env-staging', variable: 'ENV_STAGING_FILE')]) {
                     sh "cp \$ENV_STAGING_FILE .env.staging"
 

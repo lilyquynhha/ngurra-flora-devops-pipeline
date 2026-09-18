@@ -29,7 +29,7 @@ services:
 
 networks:
   staging-net:
-    name: staging-net
+    external: true
 
 volumes:
   staging_db_data:
