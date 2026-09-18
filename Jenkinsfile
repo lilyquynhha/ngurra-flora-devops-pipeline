@@ -79,29 +79,33 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                sh "docker pull ${IMAGE_NAME}:${IMAGE_TAG}"
+                withCredentials([file(credentialsId: 'env-staging', variable: 'ENV_STAGING_FILE')]) {
+                    sh "cp \$ENV_STAGING_FILE .env.staging"
 
-                // create the database first
-                sh "docker compose -f docker-compose.staging.yml up -d db"
+                    sh "docker pull ${IMAGE_NAME}:${IMAGE_TAG}"
 
-                // run migrations on the database using the builder image
-                // (in a temp container) which has the dev dependencies
-                sh "docker build --target builder -t ngurra-migrator:${BUILD_NUMBER} ."
-                sh """
-                    docker run --rm \
-                    --network staging-net \
-                    --env-file .env.staging \
-                    ngurra-migrator:${BUILD_NUMBER} \
-                    npx prisma migrate deploy --schema=src/prisma/schema.prisma
-                """
+                    // create the database first
+                    sh "docker compose -f docker-compose.staging.yml up -d db"
 
-                // create the app once the database is ready
-                sh "docker compose -f docker-compose.staging.yml up -d app"
+                    // run migrations on the database using the builder image
+                    // (in a temp container) which has the dev dependencies
+                    sh "docker build --target builder -t ngurra-migrator:${BUILD_NUMBER} ."
+                    sh """
+                        docker run --rm \
+                        --network staging-net \
+                        --env-file .env.staging \
+                        ngurra-migrator:${BUILD_NUMBER} \
+                        npx prisma migrate deploy --schema=src/prisma/schema.prisma
+                    """
 
-                // confirm the app is healthy -> successful deployment
-                sh """
-                    docker run --rm --network staging-net curlimages/curl -sf --retry 10 --retry-delay 5 --retry-connrefused http://app:3000/health
-                """
+                    // create the app once the database is ready
+                    sh "docker compose -f docker-compose.staging.yml up -d app"
+
+                    // confirm the app is healthy -> successful deployment
+                    sh """
+                        docker run --rm --network staging-net curlimages/curl -sf --retry 10 --retry-delay 5 --retry-connrefused http://app:3000/health
+                    """
+                }
             }
         }
     }
