@@ -79,6 +79,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
+                sh "docker network create monitoring-net || true"
                 sh "docker network create staging-net || true"
 
                 withCredentials([file(credentialsId: 'env-staging', variable: 'ENV_STAGING_FILE')]) {
@@ -157,7 +158,7 @@ pipeline {
                 sh "docker build -t ngurra-prometheus:latest -f Dockerfile.prometheus ."
                 sh "docker build -t ngurra-alertmanager:latest -f Dockerfile.alertmanager ."
 
-                sh "docker network create monitoring-net || true"
+                // sh "docker network create monitoring-net || true"
                 sh "docker compose -f docker-compose.monitoring.yml up -d"
 
                 sh """

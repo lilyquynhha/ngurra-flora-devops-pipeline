@@ -7,6 +7,7 @@ services:
       - .env.staging
     networks:
       - staging-net
+      - monitoring-net
     depends_on:
       db:
         condition: service_healthy
@@ -31,6 +32,8 @@ services:
 
 networks:
   staging-net:
+    external: true
+  monitoring-net:
     external: true
 
 volumes:
