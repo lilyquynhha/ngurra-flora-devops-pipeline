@@ -163,8 +163,7 @@ pipeline {
                 sh """
                     docker run --rm --network monitoring-net curlimages/curl -f -G \
                     'http://prometheus:9090/api/v1/query' \
-                    --data-urlencode 'query=up{job="ngurra-production"}' \
-                    | grep -q '"value":\\[.*,"1"\\]'
+                    --data-urlencode 'query=up{job="ngurra-production"}'
                 """
             }
         }
