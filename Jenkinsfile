@@ -43,8 +43,8 @@ pipeline {
                             -v jenkins_home:/var/jenkins_home \
                             -w \$WORKSPACE \
                             sonarsource/sonar-scanner-cli \
-                            -Dsonar.host.url=http://sonarqube:9000 \
-                            -Dsonar.token=\$SONAR_TOKEN
+                            -Dsonar.token=\$SONAR_TOKEN \
+                            -Dsonar.working.directory=\$WORKSPACE/.scannerwork
                         """
                     }                    
                 }
