@@ -102,7 +102,7 @@ pipeline {
                     """
 
                     // create the app once the database is ready
-                    sh "docker compose -f docker-compose.staging.yml up -d app"
+                    sh "docker compose -p ngurra-staging -f docker-compose.staging.yml up -d app"
 
                     // confirm the app is healthy -> successful deployment
                     sh """
@@ -140,7 +140,7 @@ pipeline {
                         npx prisma migrate deploy --schema=src/prisma/schema.prisma
                     """
 
-                    sh "docker compose -f docker-compose.production.yml up -d app"
+                    sh "docker compose -p ngurra-production -f docker-compose.production.yml up -d app"
 
                     sh """
                         docker run --rm --network prod-net curlimages/curl -sf --retry 10 --retry-delay 5 --retry-connrefused http://app:3000/health
