@@ -22,6 +22,9 @@ FROM node:22-slim AS production
 
 WORKDIR /app
 
+# install any Debian security patches released since this base image was built
+RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
+
 # install dependencies & remove npm cli once done
 COPY package*.json ./
 RUN npm ci --omit=dev && \
