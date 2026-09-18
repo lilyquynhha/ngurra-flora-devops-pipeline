@@ -55,5 +55,22 @@ pipeline {
                 }
             }
         }
+        stage('Security') {
+            steps {
+                sh """
+                    docker run --rm aquasec/trivy image \
+                    --exit-code 1 \
+                    --severity CRITICAL,HIGH \
+                    --format table \
+                    --output trivy-report.txt \
+                    ${IMAGE_NAME}:${IMAGE_TAG}
+                """
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'trivy-report.txt', allowEmptyArchive: true
+                }
+            }
+        }
     }
 }
