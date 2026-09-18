@@ -22,7 +22,7 @@ services:
     volumes:
       - prod_db_data:/var/lib/postgresql/data
     networks:
-      - staging-net
+      - prod-net
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -31,7 +31,7 @@ services:
 
 networks:
   prod-net:
-    name: prod-net
+    external: true
 
 volumes:
   prod_db_data:
