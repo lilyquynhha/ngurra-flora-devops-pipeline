@@ -35,7 +35,7 @@ pipeline {
         stage('Code Quality') {
             steps {
                 sh "docker network create ci-network || true"
-                withSonarQubeEnv() {
+                withSonarQubeEnv("My SonarQube Server") {
                     withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
                         sh """
                             docker run --rm \
