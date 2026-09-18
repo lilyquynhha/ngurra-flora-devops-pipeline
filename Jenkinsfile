@@ -41,7 +41,7 @@ pipeline {
                         --network ci-network \
                         -v \$(pwd):/usr/src \
                         sonarsource/sonar-scanner-cli \
-                        -Dproject.settings=../myproject.properties \
+                        -Dproject.settings=./sonar-project.properties \
                         -Dsonar.host.url=http://sonarqube:9000 \
                         -Dsonar.token=\$SONAR_TOKEN
                     """
