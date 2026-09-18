@@ -111,5 +111,44 @@ pipeline {
                 }
             }
         }
+        stage('Release') {
+            steps {
+                input message: "Deploy build ${IMAGE_TAG} to production?", ok: "Release"
+
+                sh "docker network create prod-net || true"
+
+                script {
+                    // record the previous image tag before release so rollback is possible
+                    def previousTag = sh(
+                        script: "docker inspect --format='{{.Config.Image}}' ngurra-flora-pipeline-app-1 2>/dev/null || echo 'none (first deployment)'",
+                        returnStdout: true
+                    ).trim()
+                    writeFile file: 'rollback-info.txt', text: "Previous production image before this release: ${previousTag}\nReleased: ${IMAGE_NAME}:${IMAGE_TAG}\nBuild: ${BUILD_NUMBER}\n"
+                    archiveArtifacts artifacts: 'rollback-info.txt'
+                }
+
+                withCredentials([file(credentialsId: 'env-production', variable: 'ENV_PROD_FILE')]) {
+                    sh "cp \$ENV_PROD_FILE .env.production"
+
+                    sh "docker compose -f docker-compose.production.yml down"
+                    sh "docker compose -f docker-compose.production.yml up -d --wait db"
+
+                    sh "docker build --target builder -t ngurra-migrator:${BUILD_NUMBER} ."
+                    sh """
+                        docker run --rm \
+                        --network prod-net \
+                        --env-file .env.production \
+                        ngurra-migrator:${BUILD_NUMBER} \
+                        npx prisma migrate deploy --schema=src/prisma/schema.prisma
+                    """
+
+                    sh "docker compose -f docker-compose.production.yml up -d app"
+
+                    sh """
+                        docker run --rm --network prod-net curlimages/curl -sf --retry 10 --retry-delay 5 --retry-connrefused http://app:3000/health
+                    """
+                }
+            }
+        }
     }
 }
