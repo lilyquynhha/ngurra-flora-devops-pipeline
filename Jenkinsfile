@@ -161,7 +161,7 @@ pipeline {
                 sh "docker compose -f docker-compose.monitoring.yml up -d"
 
                 sh """
-                    docker run --rm --network monitoring-net curlimages/curl -sf -G \
+                    docker run --rm --network monitoring-net curlimages/curl -f -G \
                     'http://prometheus:9090/api/v1/query' \
                     --data-urlencode 'query=up{job="ngurra-production"}' \
                     | grep -q '"value":\\[.*,"1"\\]'
