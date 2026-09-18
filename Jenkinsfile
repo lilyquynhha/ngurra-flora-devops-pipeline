@@ -39,9 +39,9 @@ pipeline {
                     sh """
                         docker run --rm \
                         --network ci-network \
-                        -v \$(pwd):/usr/src \
+                        -v jenkins_home:/var/jenkins_home \
+                        -w \$WORKSPACE \
                         sonarsource/sonar-scanner-cli \
-                        -Dproject.settings=./sonar-project.properties \
                         -Dsonar.host.url=http://sonarqube:9000 \
                         -Dsonar.token=\$SONAR_TOKEN
                     """
