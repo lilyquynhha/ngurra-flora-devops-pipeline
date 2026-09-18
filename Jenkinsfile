@@ -24,11 +24,11 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh "docker compose -f docker-compose.test.yml up --build --abort-on-container-exit --exit-code-from test-runner"
+                sh "docker compose -p ngurra-testing -f docker-compose.test.yml up --build --abort-on-container-exit --exit-code-from test-runner"
             }
             post {
                 always {
-                    sh "docker compose -f docker-compose.test.yml down -v"
+                    sh "docker compose -p ngurra-testing -f docker-compose.test.yml down -v"
                 }
             }
         }
