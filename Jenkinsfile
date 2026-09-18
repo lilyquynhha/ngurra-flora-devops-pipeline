@@ -40,6 +40,7 @@ pipeline {
                         sh """
                             docker run --rm \
                             --network ci-network \
+                            -u root \
                             -v jenkins_home:/var/jenkins_home \
                             -w \$WORKSPACE \
                             sonarsource/sonar-scanner-cli \
