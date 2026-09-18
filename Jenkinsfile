@@ -44,6 +44,7 @@ pipeline {
                             -w \$WORKSPACE \
                             sonarsource/sonar-scanner-cli \
                             -Dsonar.token=\$SONAR_TOKEN \
+                            -Dsonar.host.url=\$SONAR_HOST_URL \
                             -Dsonar.working.directory=\$WORKSPACE/.scannerwork
                         """
                     }                    
