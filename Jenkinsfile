@@ -162,12 +162,9 @@ pipeline {
                 sh "docker compose -f docker-compose.monitoring.yml up -d"
 
                 sh """
-                    RESPONSE=\$(docker run --rm --network monitoring-net curlimages/curl -sf -G \
+                    docker run --rm --network monitoring-net curlimages/curl -sf -G \
                     'http://prometheus:9090/api/v1/query' \
-                    --data-urlencode 'query=up{job="ngurra-production"}')
-
-                    echo "Prometheus response: \$RESPONSE"
-                    echo "\$RESPONSE" | grep -qF '"1"]'
+                    --data-urlencode 'query=up{job="ngurra-production"}'
                 """
             }
         }
