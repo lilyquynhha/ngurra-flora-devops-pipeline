@@ -22,9 +22,10 @@ FROM node:22-slim AS production
 
 WORKDIR /app
 
-# install dependencies
+# install dependencies & remove npm cli once done
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev && \
+    rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 
 # Copy compiled output and generated Prisma client from the builder stage
 COPY --from=builder /app/dist ./dist

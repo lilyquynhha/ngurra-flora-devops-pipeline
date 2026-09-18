@@ -65,6 +65,7 @@ pipeline {
                     aquasec/trivy image \
                     --exit-code 1 \
                     --severity CRITICAL,HIGH \
+                    --ignorefile .trivyignore \
                     --format table \
                     --output trivy-report.txt \
                     ${IMAGE_NAME}:${IMAGE_TAG}

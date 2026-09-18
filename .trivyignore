@@ -1,0 +1,23 @@
+# Debian OS-level CVEs with no upstream fix available as of scan date.
+# These affect OS utility packages (perl, util-linux, zlib) present in the
+# base image but not directly invoked by the application's own code paths.
+# No fixed version exists; accepted as low-practical-risk.
+
+CVE-2023-45853
+CVE-2026-13221
+CVE-2026-8376
+CVE-2025-69720
+CVE-2026-16742
+CVE-2026-41992
+CVE-2026-42496
+CVE-2026-42497
+CVE-2026-48962
+CVE-2026-53613
+CVE-2026-54369
+CVE-2026-57432
+CVE-2026-57433
+CVE-2026-76642
+CVE-2026-78408
+CVE-2026-78409
+CVE-2026-78410
+CVE-2026-9538
