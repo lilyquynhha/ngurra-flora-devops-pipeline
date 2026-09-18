@@ -32,5 +32,23 @@ pipeline {
                 }
             }
         }
+        stage('Code Quality') {
+            steps {
+                sh "docker network create ci-network || true"
+                withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                    sh """
+                        docker run --rm \
+                        --network ci-network \
+                        -v \$(pwd):/usr/src \
+                        sonarsource/sonar-scanner-cli \
+                        -Dsonar.host.url=http://sonarqube:9000 \
+                        -Dsonar.login=\$SONAR_TOKEN
+                    """
+                }
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
     }
 }
