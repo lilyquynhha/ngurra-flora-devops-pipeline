@@ -30,10 +30,11 @@ COPY package*.json ./
 RUN npm ci --omit=dev && \
     rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 
-# Copy compiled output and generated Prisma client from the builder stage
+# Copy compiled output, Prisma client, and static resources in /public from the builder stage
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder /app/src/prisma ./src/prisma
+COPY --from=builder /app/src/public ./src/public
 
 EXPOSE 3000
 
