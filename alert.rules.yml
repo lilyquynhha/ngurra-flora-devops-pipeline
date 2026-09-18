@@ -1,0 +1,20 @@
+groups:
+  - name: ngurra-flora-alerts
+    rules:
+      - alert: AppDown
+        expr: up{job=~"ngurra-.*"} == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $labels.job }} is down"
+          description: "{{ $labels.job }} has been unreachable for over 30 seconds."
+
+      - alert: HighErrorRate
+        expr: rate(http_request_duration_seconds_count{status_code=~"5.."}[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Increasing error rate on {{ $labels.job }}"
+          description: "{{ $labels.job }} is returning 5xx responses at an increasing rate."

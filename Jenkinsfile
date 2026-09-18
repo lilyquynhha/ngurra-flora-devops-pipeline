@@ -148,5 +148,17 @@ pipeline {
                 }
             }
         }
+        stage('Monitoring') {
+            steps {
+                sh "docker network create monitoring-net || true"
+                sh "docker compose -f docker-compose.monitoring.yml up -d"
+
+                sh """
+                    docker run --rm --network monitoring-net curlimages/curl -sf \
+                    'http://prometheus:9090/api/v1/query?query=up{job="ngurra-production"}' \
+                    | grep -q '"value":\\[.*,"1"\\]'
+                """
+            }
+        }
     }
 }
