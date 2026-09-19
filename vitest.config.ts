@@ -7,6 +7,7 @@ export default defineConfig({
     setupFiles: ["src/tests/setup.ts"],
     fileParallelism: false,
     coverage: {
+      provider: "v8",
       reporter: ["lcov"],
     },
   },
