@@ -6,5 +6,8 @@ export default defineConfig({
     environment: "node",
     setupFiles: ["src/tests/setup.ts"],
     fileParallelism: false,
+    coverage: {
+      reporter: ["lcov"],
+    },
   },
 });
