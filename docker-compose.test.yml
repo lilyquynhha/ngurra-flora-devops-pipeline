@@ -21,4 +21,10 @@ services:
     environment:
       DATABASE_URL: "postgresql://postgres:postgres@test-db:5432/ngurra_flora_test"
       JWT_SECRET: "4cba2be34d92dec771fb270a8ecbd5435579e8df81dd689cf76daa57f505275d6a4c358cb6b578d138e2086bd29c037a97c9c377fecf41361dc9a4a5af748046"
-    command: sh -c "npx prisma migrate deploy --schema=src/prisma/schema.prisma && npm test"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    command: sh -c "npx prisma migrate deploy --schema=src/prisma/schema.prisma && npm test && mkdir -p ${WORKSPACE}/coverage && cp -r /app/coverage/. ${WORKSPACE}/coverage/"
+
+volumes:
+  jenkins_home:
+    external: true
