@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./lib/swagger.js";
+import helmet from "helmet";
 
 import authRoutes from "./routes/auth.routes.js";
 import healthRoutes from "./routes/health.routes.js";
@@ -18,6 +19,8 @@ import metricsRoutes from "./routes/metrics.routes.js";
 dotenv.config();
 
 const app = express();
+
+app.use(helmet());
 
 // Rate limit on auth endpoints
 const authLimiter = rateLimit({
@@ -72,8 +75,8 @@ app.use("/tags", tagRoutes);
 
 app.use(errorHandler);
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+app.get("/", (req, res) => {
+  res.send("Hello World!");
 });
 
 export default app;
