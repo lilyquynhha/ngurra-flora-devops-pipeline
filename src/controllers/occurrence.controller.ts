@@ -24,8 +24,8 @@ export const getAllOccurrences = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    let page = parseInt(req.query.page as string) || 1;
-    let limit = parseInt(req.query.limit as string) || 20;
+    let page = Number.parseInt(req.query.page as string) || 1;
+    let limit = Number.parseInt(req.query.limit as string) || 20;
 
     // Validate positive integers
     if (page < 1 || !Number.isInteger(page)) page = 1;
@@ -109,8 +109,8 @@ export const getOccurrencesByPlant = async (
 ): Promise<void> => {
   try {
     const { plantId } = req.params;
-    let page = parseInt(req.query.page as string) || 1;
-    let limit = parseInt(req.query.limit as string) || 20;
+    let page = Number.parseInt(req.query.page as string) || 1;
+    let limit = Number.parseInt(req.query.limit as string) || 20;
 
     // Validate positive integers
     if (page < 1 || !Number.isInteger(page)) page = 1;
@@ -172,11 +172,11 @@ export const getNearbyOccurrences = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const lat = parseFloat(req.query.lat as string);
-    const lng = parseFloat(req.query.lng as string);
-    const radiusKm = parseFloat(req.query.radius as string) || 50;
+    const lat = Number.parseFloat(req.query.lat as string);
+    const lng = Number.parseFloat(req.query.lng as string);
+    const radiusKm = Number.parseFloat(req.query.radius as string) || 50;
 
-    if (isNaN(lat) || isNaN(lng)) {
+    if (Number.isNaN(lat) || Number.isNaN(lng)) {
       res.status(400).json({ error: "lat and lng are required numeric values" });
       return;
     }
@@ -288,12 +288,12 @@ export const getOccurrencesInBbox = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const minLng = parseFloat(req.query.minLng as string);
-    const minLat = parseFloat(req.query.minLat as string);
-    const maxLng = parseFloat(req.query.maxLng as string);
-    const maxLat = parseFloat(req.query.maxLat as string);
+    const minLng = Number.parseFloat(req.query.minLng as string);
+    const minLat = Number.parseFloat(req.query.minLat as string);
+    const maxLng = Number.parseFloat(req.query.maxLng as string);
+    const maxLat = Number.parseFloat(req.query.maxLat as string);
 
-    if ([minLng, minLat, maxLng, maxLat].some(isNaN)) {
+    if ([minLng, minLat, maxLng, maxLat].some(Number.isNaN)) {
       res.status(400).json({ error: "minLng, minLat, maxLng, maxLat are all required" });
       return;
     }

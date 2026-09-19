@@ -12,8 +12,8 @@ export const getAllPlants = async (
 ): Promise<void> => {
   try {
     // Get the query params for pagination
-    let page = parseInt(req.query.page as string) || 1;
-    let limit = parseInt(req.query.limit as string) || 20;
+    let page = Number.parseInt(req.query.page as string) || 1;
+    let limit = Number.parseInt(req.query.limit as string) || 20;
 
     // Validate positive integers
     if (page < 1 || !Number.isInteger(page)) page = 1;
@@ -127,11 +127,11 @@ export const getNearbyPlants = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const lat = parseFloat(req.query.lat as string);
-    const lng = parseFloat(req.query.lng as string);
-    const radiusKm = parseFloat(req.query.radius as string) || 50;
+    const lat = Number.parseFloat(req.query.lat as string);
+    const lng = Number.parseFloat(req.query.lng as string);
+    const radiusKm = Number.parseFloat(req.query.radius as string) || 50;
 
-    if (isNaN(lat) || isNaN(lng)) {
+    if (Number.isNaN(lat) || Number.isNaN(lng)) {
       res.status(400).json({ error: "lat and lng are required numeric values" });
       return;
     }
