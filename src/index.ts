@@ -20,7 +20,7 @@ dotenv.config();
 
 const app = express();
 
-app.use(helmet());
+app.use(helmet()); // use helmet to secure app
 
 // Rate limit on auth endpoints
 const authLimiter = rateLimit({
