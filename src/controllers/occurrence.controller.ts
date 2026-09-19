@@ -1,5 +1,55 @@
 import { Request, Response, NextFunction } from "express";
 import prisma from "../lib/prisma.js";
+import { parsePagination, parseCoordinates } from "../utils/queryParsers.js";
+
+// --- Shared occurrence select
+const occurrenceSelect = {
+  id: true,
+  plant: {
+    select: {
+      id: true,
+      scientificName: true,
+      commonName: true,
+      family: true,
+      conservationStatus: true,
+    },
+  },
+  region: { select: { id: true, name: true, code: true } },
+  latitude: true,
+  longitude: true,
+  recordedDate: true,
+  basisOfRecord: true,
+  dataProvider: true,
+  externalId: true,
+  createdAt: true,
+};
+
+const findFullOccurrence = async (id: string) => {
+  return prisma.occurrence.findUnique({
+    where: { id },
+    select: occurrenceSelect,
+  });
+};
+
+const mapRawOccurrence = (r: any) => ({
+  id: r.id,
+  plant: {
+    id: r.plant_id,
+    scientificName: r.scientific_name,
+    commonName: r.common_name,
+    family: r.family,
+    conservationStatus: r.conservation_status ?? null,
+  },
+  region: r.region_id ? { id: r.region_id, name: r.name ?? null, code: r.code ?? null } : null,
+  latitude: r.latitude,
+  longitude: r.longitude,
+  recordedDate: r.recorded_date ?? null,
+  basisOfRecord: r.basis_of_record ?? null,
+  dataProvider: r.data_provider ?? null,
+  externalId: r.external_id ?? null,
+  createdAt: r.created_at,
+  ...(r.distance_km !== undefined && { distance_km: Number(r.distance_km) }),
+});
 
 // --- Helper: match regionId from regionCode
 const resolveRegionId = async (regionCode: string | undefined): Promise<string | null> => {
@@ -24,14 +74,7 @@ export const getAllOccurrences = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    let page = Number.parseInt(req.query.page as string) || 1;
-    let limit = Number.parseInt(req.query.limit as string) || 20;
-
-    // Validate positive integers
-    if (page < 1 || !Number.isInteger(page)) page = 1;
-    if (limit < 1 || !Number.isInteger(limit)) limit = 20;
-
-    const skip = (page - 1) * limit;
+    const { page, limit, skip } = parsePagination(req, 20);
     const plantId = req.query.plantId as string | undefined;
     const regionId = req.query.regionId as string | undefined;
 
@@ -66,26 +109,7 @@ export const getAllOccurrences = async (
         skip,
         take: limit,
         orderBy: { recordedDate: "desc" },
-        select: {
-          id: true,
-          plant: {
-            select: {
-              id: true,
-              scientificName: true,
-              commonName: true,
-              family: true,
-              conservationStatus: true,
-            },
-          },
-          region: { select: { id: true, name: true, code: true } },
-          latitude: true,
-          longitude: true,
-          recordedDate: true,
-          basisOfRecord: true,
-          dataProvider: true,
-          externalId: true,
-          createdAt: true,
-        },
+        select: occurrenceSelect,
       }),
       prisma.occurrence.count({ where }),
     ]);
@@ -109,14 +133,7 @@ export const getOccurrencesByPlant = async (
 ): Promise<void> => {
   try {
     const { plantId } = req.params;
-    let page = Number.parseInt(req.query.page as string) || 1;
-    let limit = Number.parseInt(req.query.limit as string) || 20;
-
-    // Validate positive integers
-    if (page < 1 || !Number.isInteger(page)) page = 1;
-    if (limit < 1 || !Number.isInteger(limit)) limit = 20;
-
-    const skip = (page - 1) * limit;
+    const { page, limit, skip } = parsePagination(req, 20);
 
     const plant = await prisma.plant.findUnique({ where: { id: plantId as string } });
     if (!plant) {
@@ -124,34 +141,16 @@ export const getOccurrencesByPlant = async (
       return;
     }
 
+    const where = { plantId: plantId as string };
     const [occurrences, total] = await prisma.$transaction([
       prisma.occurrence.findMany({
-        where: { plantId: plantId as string },
+        where,
         skip,
         take: limit,
         orderBy: { recordedDate: "desc" },
-        select: {
-          id: true,
-          plant: {
-            select: {
-              id: true,
-              scientificName: true,
-              commonName: true,
-              family: true,
-              conservationStatus: true,
-            },
-          },
-          region: { select: { id: true, name: true, code: true } },
-          latitude: true,
-          longitude: true,
-          recordedDate: true,
-          basisOfRecord: true,
-          dataProvider: true,
-          externalId: true,
-          createdAt: true,
-        },
+        select: occurrenceSelect,
       }),
-      prisma.occurrence.count({ where: { plantId: plantId as string } }),
+      prisma.occurrence.count({ where }),
     ]);
 
     res.json({
@@ -172,41 +171,15 @@ export const getNearbyOccurrences = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const lat = Number.parseFloat(req.query.lat as string);
-    const lng = Number.parseFloat(req.query.lng as string);
-    const radiusKm = Number.parseFloat(req.query.radius as string) || 50;
-
-    if (Number.isNaN(lat) || Number.isNaN(lng)) {
-      res.status(400).json({ error: "lat and lng are required numeric values" });
-      return;
-    }
-
-    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-      res.status(400).json({ error: "lat must be -90 to 90, lng must be -180 to 180" });
+    const { lat, lng, radiusKm, error } = parseCoordinates(req);
+    if (error) {
+      res.status(400).json({ error });
       return;
     }
 
     const radiusMetres = radiusKm * 1000;
 
-    const results: Array<{
-      id: string;
-      plant_id: string;
-      scientific_name: string;
-      common_name: string | null;
-      family: string | null;
-      conservation_status: string | null;
-      region_id: string;
-      name: string;
-      code: string;
-      latitude: number;
-      longitude: number;
-      recorded_date: Date | null;
-      basis_of_record: string | null;
-      data_provider: string | null;
-      external_id: string | null;
-      created_at: Date;
-      distance_km: number;
-    }> = await prisma.$queryRaw`
+    const results: Array<any> = await prisma.$queryRaw`
       SELECT
         o.id,
         o.plant_id,
@@ -241,30 +214,11 @@ export const getNearbyOccurrences = async (
         ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)::geography,
         ${radiusMetres}
       )
-      ORDER BY distance_km ASC -- nearest occurences first
+      ORDER BY distance_km ASC
       LIMIT 50
     `;
 
-    // Map to returned JSON shape
-    const data = results.map((r: any) => ({
-      id: r.id,
-      plant: {
-        id: r.plant_id,
-        scientificName: r.scientific_name,
-        commonName: r.common_name,
-        family: r.family,
-        conservationStatus: r.conservation_status ?? null,
-      },
-      region: r.region_id ? { id: r.region_id, name: r.name ?? null, code: r.code ?? null } : null,
-      latitude: r.latitude,
-      longitude: r.longitude,
-      recordedDate: r.recorded_date ?? null,
-      basisOfRecord: r.basis_of_record ?? null,
-      dataProvider: r.data_provider ?? null,
-      externalId: r.external_id ?? null,
-      createdAt: r.created_at,
-      distance_km: Number(r.distance_km),
-    }));
+    const data = results.map(mapRawOccurrence);
 
     res.json({
       total: data.length,
@@ -298,24 +252,7 @@ export const getOccurrencesInBbox = async (
       return;
     }
 
-    const results: Array<{
-      id: string;
-      plant_id: string;
-      scientific_name: string;
-      common_name: string | null;
-      family: string | null;
-      conservation_status: string | null;
-      region_id: string;
-      name: string;
-      code: string;
-      latitude: number;
-      longitude: number;
-      recorded_date: Date | null;
-      basis_of_record: string | null;
-      data_provider: string | null;
-      external_id: string | null;
-      created_at: Date;
-    }> = await prisma.$queryRaw`
+    const results: Array<any> = await prisma.$queryRaw`
       SELECT
         o.id,
         o.plant_id,
@@ -348,26 +285,7 @@ export const getOccurrencesInBbox = async (
       LIMIT 100
     `;
 
-    const data = results.map((r: any) => ({
-      id: r.id,
-      plant: {
-        id: r.plant_id,
-        scientificName: r.scientific_name,
-        commonName: r.common_name,
-        family: r.family,
-        conservationStatus: r.conservation_status ?? null,
-      },
-      region: r.region_id ? { id: r.region_id, name: r.name ?? null, code: r.code ?? null } : null,
-      latitude: r.latitude,
-      longitude: r.longitude,
-      recordedDate: r.recorded_date ?? null,
-      basisOfRecord: r.basis_of_record ?? null,
-      dataProvider: r.data_provider ?? null,
-      externalId: r.external_id ?? null,
-      createdAt: r.created_at,
-    }));
-
-    res.json({ data });
+    res.json({ data: results.map(mapRawOccurrence) });
   } catch (err) {
     next(err);
   }
@@ -433,30 +351,7 @@ export const createOccurrence = async (
     `;
 
     // 3 - fetch the full occurrence with plant and region data
-    const fullOccurrence = await prisma.occurrence.findUnique({
-      where: { id: occurrence.id },
-      select: {
-        id: true,
-        plant: {
-          select: {
-            id: true,
-            scientificName: true,
-            commonName: true,
-            family: true,
-            conservationStatus: true,
-          },
-        },
-        region: { select: { id: true, name: true, code: true } },
-        latitude: true,
-        longitude: true,
-        recordedDate: true,
-        basisOfRecord: true,
-        dataProvider: true,
-        externalId: true,
-        createdAt: true,
-      },
-    });
-
+    const fullOccurrence = await findFullOccurrence(occurrence.id);
     res.status(201).json({ data: fullOccurrence });
   } catch (err: any) {
     if (err.code === "P2002") {
@@ -532,30 +427,7 @@ export const updateOccurrence = async (
     }
 
     // Fetch the full occurrence with plant and region data
-    const fullOccurrence = await prisma.occurrence.findUnique({
-      where: { id: occurrence.id },
-      select: {
-        id: true,
-        plant: {
-          select: {
-            id: true,
-            scientificName: true,
-            commonName: true,
-            family: true,
-            conservationStatus: true,
-          },
-        },
-        region: { select: { id: true, name: true, code: true } },
-        latitude: true,
-        longitude: true,
-        recordedDate: true,
-        basisOfRecord: true,
-        dataProvider: true,
-        externalId: true,
-        createdAt: true,
-      },
-    });
-
+    const fullOccurrence = await findFullOccurrence(occurrence.id);
     res.json({ data: fullOccurrence });
   } catch (err: any) {
     if (err.code === "P2025") {

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import prisma from "../lib/prisma.js";
 import { ConservationStatus } from "../prisma/generated/prisma/enums.js";
 import { TransactionClient } from "../prisma/generated/prisma/internal/prismaNamespace.js";
+import { parsePagination, parseCoordinates } from "../utils/queryParsers.js";
 
 // --- Get all plants with filtering options and pagination
 
@@ -11,17 +12,8 @@ export const getAllPlants = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    // Get the query params for pagination
-    let page = Number.parseInt(req.query.page as string) || 1;
-    let limit = Number.parseInt(req.query.limit as string) || 20;
+    const { page, limit, skip } = parsePagination(req, 20);
 
-    // Validate positive integers
-    if (page < 1 || !Number.isInteger(page)) page = 1;
-    if (limit < 1 || !Number.isInteger(limit)) limit = 20;
-
-    const skip = (page - 1) * limit;
-
-    // Get the query params for filtering options
     const regionId = req.query.region as string | undefined;
     const tagId = req.query.tag as string | undefined;
     const status = req.query.status as ConservationStatus | undefined;
@@ -127,17 +119,9 @@ export const getNearbyPlants = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const lat = Number.parseFloat(req.query.lat as string);
-    const lng = Number.parseFloat(req.query.lng as string);
-    const radiusKm = Number.parseFloat(req.query.radius as string) || 50;
-
-    if (Number.isNaN(lat) || Number.isNaN(lng)) {
-      res.status(400).json({ error: "lat and lng are required numeric values" });
-      return;
-    }
-
-    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-      res.status(400).json({ error: "lat must be -90 to 90, lng must be -180 to 180" });
+    const { lat, lng, radiusKm, error } = parseCoordinates(req);
+    if (error) {
+      res.status(400).json({ error });
       return;
     }
 
